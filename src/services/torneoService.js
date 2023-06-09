@@ -1,10 +1,11 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
+const constants = require("../constants")
 
 const getStandings = async () => {
   try {
-    const rawTable = await scrapeStandingsTableFromAICSWebSite();
-    return rawTableToConvertedTable(rawTable);
+    const rawTable = await scrapeTableFromAICSWebSite("http://www.aicslucca.com/homegirone.php?id=514");
+    return rawTableToConvertedTable(rawTable, constants.standingsTableTranslation);
   } catch (error) {
     throw error;
   }
@@ -12,14 +13,29 @@ const getStandings = async () => {
 
 const getPlayers = async () => {
   try {
-    return await scrapePlayersTableFromAICSWebSite();
+    const rawTable =  await scrapeTableFromAICSWebSite("http://www.aicslucca.com/marcatori.php?id_girone=514");
+    const transformedData = rawTable.map(item => {
+      const firstName = item.Nome.trim();
+      const lastName = item.Cognome.trim();
+      const team = item.Squadra.trim();
+      const goal = item["Goal\n\t      Fatti"].replace(/\n|\t/g, "").trim();
+    
+      return {
+        firstName,
+        lastName,
+        team,
+        goal
+      };
+    });
+    return transformedData;
   } catch (error) {
     throw error;
   }
 };
 
-async function scrapeStandingsTableFromAICSWebSite() {
-  const response = await axios.get("http://www.aicslucca.com/homegirone.php?id=514");
+
+async function scrapeTableFromAICSWebSite(url) {
+  const response = await axios.get(url);
   const html = response.data;
   // Ora puoi utilizzare cheerio per estrarre la tabella
   const $ = cheerio.load(html);
@@ -29,31 +45,9 @@ async function scrapeStandingsTableFromAICSWebSite() {
   return htmlTableToJson($, table)
 }
 
-async function scrapePlayersTableFromAICSWebSite() {
-  const response = await axios.get("http://www.aicslucca.com/marcatori.php?id_girone=514");
-  const html = response.data;
-  // Ora puoi utilizzare cheerio per estrarre la tabella
-  const $ = cheerio.load(html);
-  const divSezione = $(".sezione");
-  const table = divSezione.find("table").first();
-  // Array per memorizzare gli oggetti della tabella
-  return htmlTableToJson($, table)
-}
 
-function rawTableToConvertedTable(rawTable) {
+function rawTableToConvertedTable(rawTable, translation) {
   const result = [];
-
-  const translation = {
-    Nome: "name",
-    Punti: "points",
-    Giocate: "matches",
-    Vinte: "won_matches",
-    Pareggiate: "drawn_matches",
-    Perse: "lost_matches",
-    "Goal Fatti": "goals_scored",
-    "Goal Subiti": "goals_conceded",
-    "Coppa Disciplina": "fair_play",
-  };
 
   for (const item of rawTable) {
     const translatedItem = {};
@@ -67,6 +61,8 @@ function rawTableToConvertedTable(rawTable) {
   }
   return result;
 }
+
+
 
 
 function htmlTableToJson($, table) {
