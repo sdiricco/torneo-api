@@ -1,4 +1,3 @@
-
 const axios = require("axios");
 const cheerio = require("cheerio");
 
@@ -11,15 +10,66 @@ const getStandings = async () => {
   }
 };
 
+const getPlayers = async () => {
+  try {
+    return await scrapePlayersTableFromAICSWebSite();
+  } catch (error) {
+    throw error;
+  }
+};
 
-async function scrapeStandingsTableFromAICSWebSite(){
-  const response = await axios.get("http://www.aicslucca.com/homegirone.php?id=514")
+async function scrapeStandingsTableFromAICSWebSite() {
+  const response = await axios.get("http://www.aicslucca.com/homegirone.php?id=514");
   const html = response.data;
   // Ora puoi utilizzare cheerio per estrarre la tabella
   const $ = cheerio.load(html);
   const divSezione = $(".sezione");
   const table = divSezione.find("table").first();
   // Array per memorizzare gli oggetti della tabella
+  return htmlTableToJson($, table)
+}
+
+async function scrapePlayersTableFromAICSWebSite() {
+  const response = await axios.get("http://www.aicslucca.com/marcatori.php?id_girone=514");
+  const html = response.data;
+  // Ora puoi utilizzare cheerio per estrarre la tabella
+  const $ = cheerio.load(html);
+  const divSezione = $(".sezione");
+  const table = divSezione.find("table").first();
+  // Array per memorizzare gli oggetti della tabella
+  return htmlTableToJson($, table)
+}
+
+function rawTableToConvertedTable(rawTable) {
+  const result = [];
+
+  const translation = {
+    Nome: "name",
+    Punti: "points",
+    Giocate: "matches",
+    Vinte: "won_matches",
+    Pareggiate: "drawn_matches",
+    Perse: "lost_matches",
+    "Goal Fatti": "goals_scored",
+    "Goal Subiti": "goals_conceded",
+    "Coppa Disciplina": "fair_play",
+  };
+
+  for (const item of rawTable) {
+    const translatedItem = {};
+    for (const key in item) {
+      if (translation.hasOwnProperty(key)) {
+        const translatedKey = translation[key];
+        translatedItem[translatedKey] = String(item[key]);
+      }
+    }
+    result.push(translatedItem);
+  }
+  return result;
+}
+
+
+function htmlTableToJson($, table) {
   const tableData = [];
 
   // Ottieni le righe della tabella
@@ -48,39 +98,11 @@ async function scrapeStandingsTableFromAICSWebSite(){
     tableData.push(rowData);
   });
 
-  return tableData
+  return tableData;
 }
 
-function rawTableToConvertedTable(rawTable){
-  const result = [];
-
-  const translation = {
-    "Nome": "name",
-    "Punti": "points",
-    "Giocate": "matches",
-    "Vinte": "won_matches",
-    "Pareggiate": "drawn_matches",
-    "Perse": "lost_matches",
-    "Goal Fatti": "goals_scored",
-    "Goal Subiti": "goals_conceded",
-    "Coppa Disciplina": "fair_play"
-  };
-  
-  for (const item of rawTable) {
-    const translatedItem = {};
-    for (const key in item) {
-      if (translation.hasOwnProperty(key)) {
-        const translatedKey = translation[key];
-        translatedItem[translatedKey] = String(item[key]);
-      }
-    }
-    result.push(translatedItem);
-  }
-  return result
-}
 
 module.exports = {
   getStandings,
+  getPlayers,
 };
-
-

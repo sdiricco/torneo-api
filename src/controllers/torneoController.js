@@ -15,7 +15,21 @@ const getStandings = async (req, res) => {
   }
 };
 
+const getPlayers = async (req, res) => {
+  try {
+    const data = await torneoService.getPlayers();
+    res.send({
+      status: "OK",
+      data
+    });
+  } catch (error) {
+    res
+      .status(error?.status || 500)
+      .send({ status: "FAILED", data: { error: error?.message || error } });
+  }
+};
 
 module.exports = {
   getStandings,
+  getPlayers
 };
