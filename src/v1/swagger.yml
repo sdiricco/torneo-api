@@ -1,0 +1,37 @@
+openapi: 3.0.0
+info:
+  title: Torneo API
+  description: The official torneo **REST** api
+  version: 1.0.0
+servers:
+  - url: https://workout-api-6ay8.onrender.com
+    description: Beta server
+
+paths:
+ /api/v1/standings:
+   get:
+     tags:
+       - Standings
+     responses:
+       200:
+         description: OK
+         content:
+           application/json:
+             schema:
+               type: array
+       5XX:
+         description: FAILED
+         content:
+           application/json:
+             schema:
+               type: object
+               properties:
+                 status: 
+                   type: string
+                   example: FAILED
+                 data:
+                   type: object
+                   properties:
+                     error:
+                       type: string 
+                       example: "Some error message"
