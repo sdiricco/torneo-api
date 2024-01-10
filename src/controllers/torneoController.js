@@ -1,9 +1,23 @@
-// In src/controllers/workoutController.js
 const torneoService = require("../services/torneoService");
+
+const getTournaments = (req, res) => {
+  try {
+    const data = torneoService.getTournaments();
+    res.send({
+      status: "OK",
+      data
+    });
+  } catch (error) {
+    res
+      .status(error?.status || 500)
+      .send({ status: "FAILED", data: { error: error?.message || error } });
+  }
+}
 
 const getStandings = async (req, res) => {
   try {
-    const data = await torneoService.getStandings();
+    const {url} = req.query
+    const data = await torneoService.getStandings(url);
     res.send({
       status: "OK",
       data
@@ -17,7 +31,8 @@ const getStandings = async (req, res) => {
 
 const getPlayers = async (req, res) => {
   try {
-    const data = await torneoService.getPlayers();
+    const {url} = req.query
+    const data = await torneoService.getPlayers(url);
     res.send({
       status: "OK",
       data
@@ -30,6 +45,7 @@ const getPlayers = async (req, res) => {
 };
 
 module.exports = {
+  getTournaments,
   getStandings,
   getPlayers
 };

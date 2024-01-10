@@ -28,18 +28,18 @@ const getTournaments = () => {
   ]
 }
 
-const getStandings = async () => {
+const getStandings = async (url = CALCIO_A_5_CLASSIFICA_POGGIO_TETTO_GIRONE_SERIE_B) => {
   try {
-    const rawTable = await scrapeTableFromAICSWebSite(CALCIO_A_5_CLASSIFICA_POGGIO_TETTO_GIRONE_SERIE_B);
+    const rawTable = await scrapeTableFromAICSWebSite(url);
     return rawTableToConvertedTable(rawTable, constants.standingsTableTranslation);
   } catch (error) {
     throw error;
   }
 };
 
-const getPlayers = async () => {
+const getPlayers = async (url = CALCIO_A_5_MARCATORI_POGGIO_TETTO_GIRONE_SERIE_B) => {
   try {
-    const rawTable =  await scrapeTableFromAICSWebSite(CALCIO_A_5_MARCATORI_POGGIO_TETTO_GIRONE_SERIE_B);
+    const rawTable =  await scrapeTableFromAICSWebSite(url);
     const transformedData = rawTable.map(item => {
       const firstName = item.Nome.trim();
       const lastName = item.Cognome.trim();

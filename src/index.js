@@ -15,5 +15,6 @@ app.use("/api/v1/torneo", v1TorneoRouter);
 
 app.listen(PORT, () => {
   console.log(`API is listening on port ${PORT}`);
+  console.log(`base url:`, "/api/v1/torneo");
   swagger(app, PORT);
 });
