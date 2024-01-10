@@ -2,9 +2,16 @@ const axios = require("axios");
 const cheerio = require("cheerio");
 const constants = require("../constants")
 
+
+const CALCIO_A_5_CLASSIFICA_POGGIO_TETTO_GIRONE_D = 'http://www.aicslucca.com/homegirone.php?id=514'
+const CALCIO_A_5_MARCATORI_POGGIO_TETTO_GIRONE_D = 'http://www.aicslucca.com/marcatori.php?id_girone=514'
+
+const CALCIO_A_5_CLASSIFICA_POGGIO_TETTO_GIRONE_SERIE_B = 'https://www.aicslucca.com/homegirone.php?id=581'
+const CALCIO_A_5_MARCATORI_POGGIO_TETTO_GIRONE_SERIE_B = 'http://www.aicslucca.com/marcatori.php?id_girone=514'
+
 const getStandings = async () => {
   try {
-    const rawTable = await scrapeTableFromAICSWebSite("http://www.aicslucca.com/homegirone.php?id=514");
+    const rawTable = await scrapeTableFromAICSWebSite(CALCIO_A_5_CLASSIFICA_POGGIO_TETTO_GIRONE_SERIE_B);
     return rawTableToConvertedTable(rawTable, constants.standingsTableTranslation);
   } catch (error) {
     throw error;
@@ -13,7 +20,7 @@ const getStandings = async () => {
 
 const getPlayers = async () => {
   try {
-    const rawTable =  await scrapeTableFromAICSWebSite("http://www.aicslucca.com/marcatori.php?id_girone=514");
+    const rawTable =  await scrapeTableFromAICSWebSite(CALCIO_A_5_MARCATORI_POGGIO_TETTO_GIRONE_SERIE_B);
     const transformedData = rawTable.map(item => {
       const firstName = item.Nome.trim();
       const lastName = item.Cognome.trim();
