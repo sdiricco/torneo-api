@@ -7,7 +7,7 @@ const CALCIO_A_5_CLASSIFICA_POGGIO_TETTO_GIRONE_D = 'http://www.aicslucca.com/ho
 const CALCIO_A_5_MARCATORI_POGGIO_TETTO_GIRONE_D = 'http://www.aicslucca.com/marcatori.php?id_girone=514'
 
 const CALCIO_A_5_CLASSIFICA_POGGIO_TETTO_GIRONE_SERIE_B = 'https://www.aicslucca.com/homegirone.php?id=581'
-const CALCIO_A_5_MARCATORI_POGGIO_TETTO_GIRONE_SERIE_B = 'http://www.aicslucca.com/marcatori.php?id_girone=514'
+const CALCIO_A_5_MARCATORI_POGGIO_TETTO_GIRONE_SERIE_B = 'https://www.aicslucca.com/marcatori.php?id_girone=581'
 
 const getStandings = async () => {
   try {
