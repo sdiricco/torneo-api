@@ -9,6 +9,25 @@ const CALCIO_A_5_MARCATORI_POGGIO_TETTO_GIRONE_D = 'http://www.aicslucca.com/mar
 const CALCIO_A_5_CLASSIFICA_POGGIO_TETTO_GIRONE_SERIE_B = 'https://www.aicslucca.com/homegirone.php?id=581'
 const CALCIO_A_5_MARCATORI_POGGIO_TETTO_GIRONE_SERIE_B = 'https://www.aicslucca.com/marcatori.php?id_girone=581'
 
+const getTournaments = () => {
+  return [
+    {
+      name: 'Calcio a 5 - Poggio / Tetto - Girone D',
+      url:{
+        standing: CALCIO_A_5_CLASSIFICA_POGGIO_TETTO_GIRONE_D,
+        playersScore: CALCIO_A_5_MARCATORI_POGGIO_TETTO_GIRONE_D
+      }
+    },
+    {
+      name: 'Calcio a 5 - Poggio / Tetto - Girone serie B',
+      url:{
+        standing: CALCIO_A_5_CLASSIFICA_POGGIO_TETTO_GIRONE_SERIE_B,
+        playersScore: CALCIO_A_5_MARCATORI_POGGIO_TETTO_GIRONE_SERIE_B
+      }
+    },
+  ]
+}
+
 const getStandings = async () => {
   try {
     const rawTable = await scrapeTableFromAICSWebSite(CALCIO_A_5_CLASSIFICA_POGGIO_TETTO_GIRONE_SERIE_B);
@@ -106,6 +125,7 @@ function htmlTableToJson($, table) {
 
 
 module.exports = {
+  getTournaments,
   getStandings,
   getPlayers,
 };
