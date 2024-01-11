@@ -16,8 +16,8 @@ const getTournaments = (req, res) => {
 
 const getStandings = async (req, res) => {
   try {
-    const {url} = req.query
-    const data = await torneoService.getStandings(url);
+    const {id} = req.query
+    const data = await torneoService.getStandings(id);
     res.send({
       status: "OK",
       data
@@ -31,8 +31,8 @@ const getStandings = async (req, res) => {
 
 const getPlayers = async (req, res) => {
   try {
-    const {url} = req.query
-    const data = await torneoService.getPlayers(url);
+    const {id} = req.query
+    const data = await torneoService.getPlayers(id);
     res.send({
       status: "OK",
       data

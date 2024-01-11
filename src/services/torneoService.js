@@ -1,128 +1,41 @@
-const axios = require("axios");
-const cheerio = require("cheerio");
-const constants = require("../constants")
+const {AICS_FUTSAL_TOURNAMENTS, AICS_PLAYERS_RANKING_KEY_MAPPING, AICS_TEAMS_RANKING_KEY_MAPPING} = require("../constants");
+const { scrapeTableFromAICSWebSite } = require("../helpers/scraper");
+const objectUtils = require("../helpers/object");
 
+const baseUrl = "https://www.aicslucca.com";
 
-const CALCIO_A_5_CLASSIFICA_POGGIO_TETTO_GIRONE_D = 'http://www.aicslucca.com/homegirone.php?id=514'
-const CALCIO_A_5_MARCATORI_POGGIO_TETTO_GIRONE_D = 'http://www.aicslucca.com/marcatori.php?id_girone=514'
-
-const CALCIO_A_5_CLASSIFICA_POGGIO_TETTO_GIRONE_SERIE_B = 'https://www.aicslucca.com/homegirone.php?id=581'
-const CALCIO_A_5_MARCATORI_POGGIO_TETTO_GIRONE_SERIE_B = 'https://www.aicslucca.com/marcatori.php?id_girone=581'
+const getTeamsRankingUrl = (id) => `${baseUrl}/homegirone.php?id=${id}`;
+const getPlayersRankingUrl = (id) => `${baseUrl}/marcatori.php?id_girone=${id}`;
 
 const getTournaments = () => {
-  return [
-    {
-      name: 'Calcio a 5 - Poggio / Tetto - Girone D',
-      url:{
-        standing: CALCIO_A_5_CLASSIFICA_POGGIO_TETTO_GIRONE_D,
-        playersScore: CALCIO_A_5_MARCATORI_POGGIO_TETTO_GIRONE_D
-      }
-    },
-    {
-      name: 'Calcio a 5 - Poggio / Tetto - Girone serie B',
-      url:{
-        standing: CALCIO_A_5_CLASSIFICA_POGGIO_TETTO_GIRONE_SERIE_B,
-        playersScore: CALCIO_A_5_MARCATORI_POGGIO_TETTO_GIRONE_SERIE_B
-      }
-    },
-  ]
-}
+  return AICS_FUTSAL_TOURNAMENTS;
+};
 
-const getStandings = async (url = CALCIO_A_5_CLASSIFICA_POGGIO_TETTO_GIRONE_SERIE_B) => {
+const getStandings = async (id = 581) => {
   try {
+    const url = getTeamsRankingUrl(id);
     const rawTable = await scrapeTableFromAICSWebSite(url);
-    return rawTableToConvertedTable(rawTable, constants.standingsTableTranslation);
+    return decodeTable(rawTable, AICS_TEAMS_RANKING_KEY_MAPPING);
   } catch (error) {
     throw error;
   }
 };
 
-const getPlayers = async (url = CALCIO_A_5_MARCATORI_POGGIO_TETTO_GIRONE_SERIE_B) => {
+const getPlayers = async (id = 581) => {
   try {
-    const rawTable =  await scrapeTableFromAICSWebSite(url);
-    const transformedData = rawTable.map(item => {
-      const firstName = item.Nome.trim();
-      const lastName = item.Cognome.trim();
-      const team = item.Squadra.trim();
-      const goal = item["Goal\n\t      Fatti"].replace(/\n|\t/g, "").trim();
-    
-      return {
-        firstName,
-        lastName,
-        team,
-        goal
-      };
-    });
-    return transformedData;
+    const url = getPlayersRankingUrl(id);
+    const rawTable = await scrapeTableFromAICSWebSite(url);
+    return decodeTable(rawTable, AICS_PLAYERS_RANKING_KEY_MAPPING);
   } catch (error) {
     throw error;
   }
 };
 
-
-async function scrapeTableFromAICSWebSite(url) {
-  const response = await axios.get(url);
-  const html = response.data;
-  // Ora puoi utilizzare cheerio per estrarre la tabella
-  const $ = cheerio.load(html);
-  const divSezione = $(".sezione");
-  const table = divSezione.find("table").first();
-  // Array per memorizzare gli oggetti della tabella
-  return htmlTableToJson($, table)
+function decodeTable(rawTable, translation) {
+  return rawTable
+    .map((obj) => objectUtils.removeSpacesFromKeys(obj))
+    .map((obj) => objectUtils.decodeKeys(translation, obj));
 }
-
-
-function rawTableToConvertedTable(rawTable, translation) {
-  const result = [];
-
-  for (const item of rawTable) {
-    const translatedItem = {};
-    for (const key in item) {
-      if (translation.hasOwnProperty(key)) {
-        const translatedKey = translation[key];
-        translatedItem[translatedKey] = String(item[key]);
-      }
-    }
-    result.push(translatedItem);
-  }
-  return result;
-}
-
-
-
-
-function htmlTableToJson($, table) {
-  const tableData = [];
-
-  // Ottieni le righe della tabella
-  const rows = table.find("tr");
-
-  // Ottieni i valori della prima riga come chiavi
-  const keys = [];
-  rows
-    .first()
-    .find("td")
-    .each((index, element) => {
-      keys.push($(element).text().trim());
-    });
-
-  // Crea gli oggetti corrispondenti
-  rows.slice(1).each((rowIndex, rowElement) => {
-    const rowData = {};
-    const columns = $(rowElement).find("td");
-
-    columns.each((colIndex, colElement) => {
-      const columnName = keys[colIndex] || `col${colIndex + 1}`;
-      const columnData = $(colElement).text().trim();
-      rowData[columnName] = columnData;
-    });
-
-    tableData.push(rowData);
-  });
-
-  return tableData;
-}
-
 
 module.exports = {
   getTournaments,
