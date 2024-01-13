@@ -11,6 +11,15 @@ const getTournaments = () => {
   return AICS_FUTSAL_TOURNAMENTS;
 };
 
+const getTournamentDetails = async (id) => {
+  let tournamentDetails = {}
+  const standings = await getStandings(id);
+  const teams = standings.map(s => s.name);
+  const tournamentEntry = AICS_FUTSAL_TOURNAMENTS.find(tournament => tournament.id === id)
+  tournamentDetails = { teams,...tournamentEntry}
+  return tournamentDetails
+}
+
 const getStandings = async (id = 581) => {
   try {
     const url = getTeamsRankingUrl(id);
@@ -39,6 +48,7 @@ function decodeTable(rawTable, translation) {
 
 module.exports = {
   getTournaments,
+  getTournamentDetails,
   getStandings,
   getPlayers,
 };

@@ -14,6 +14,21 @@ const getTournaments = (req, res) => {
   }
 }
 
+const getTournamentDetails = async (req, res) => {
+  try {
+    const {id} = req.params
+    const data = await torneoService.getTournamentDetails(id);
+    res.send({
+      status: "OK",
+      data
+    });
+  } catch (error) {
+    res
+      .status(error?.status || 500)
+      .send({ status: "FAILED", data: { error: error?.message || error } });
+  }
+}
+
 const getStandings = async (req, res) => {
   try {
     const {id} = req.query
@@ -46,6 +61,7 @@ const getPlayers = async (req, res) => {
 
 module.exports = {
   getTournaments,
+  getTournamentDetails,
   getStandings,
   getPlayers
 };
