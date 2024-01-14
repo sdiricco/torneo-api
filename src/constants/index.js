@@ -86,8 +86,19 @@ const AICS_PLAYERS_RANKING_KEY_MAPPING = {
   GoalFatti: "goal",
 };
 
+const AICS_LAST_RESULTS_KEY_MAPPING = {
+  Giornata: "week",
+  Squadre: "teamA",
+  col3: "teamB",
+  Risultato: "score",
+  Data: "date",
+  Ora: 'time',
+  Luogo: 'location'
+};
+
 module.exports = {
   AICS_FUTSAL_TOURNAMENTS,
   AICS_TEAMS_RANKING_KEY_MAPPING,
   AICS_PLAYERS_RANKING_KEY_MAPPING,
+  AICS_LAST_RESULTS_KEY_MAPPING
 };

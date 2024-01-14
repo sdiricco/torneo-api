@@ -1,4 +1,4 @@
-const {AICS_FUTSAL_TOURNAMENTS, AICS_PLAYERS_RANKING_KEY_MAPPING, AICS_TEAMS_RANKING_KEY_MAPPING} = require("../constants");
+const {AICS_FUTSAL_TOURNAMENTS, AICS_PLAYERS_RANKING_KEY_MAPPING, AICS_TEAMS_RANKING_KEY_MAPPING, AICS_LAST_RESULTS_KEY_MAPPING} = require("../constants");
 const { scrapeTableFromAICSWebSite } = require("../helpers/scraper");
 const objectUtils = require("../helpers/object");
 
@@ -20,7 +20,7 @@ const getTournamentDetails = async (id) => {
   return tournamentDetails
 }
 
-const getStandings = async (id = 581) => {
+const getStandings = async (id) => {
   try {
     const url = getTeamsRankingUrl(id);
     const rawTable = await scrapeTableFromAICSWebSite(url);
@@ -30,7 +30,7 @@ const getStandings = async (id = 581) => {
   }
 };
 
-const getPlayers = async (id = 581) => {
+const getPlayers = async (id) => {
   try {
     const url = getPlayersRankingUrl(id);
     const rawTable = await scrapeTableFromAICSWebSite(url);
@@ -39,6 +39,16 @@ const getPlayers = async (id = 581) => {
     throw error;
   }
 };
+
+const getLastResults = async (id) => {
+  try {
+    const url = getTeamsRankingUrl(id);
+    const rawTable = await scrapeTableFromAICSWebSite(url, 1);
+    return decodeTable(rawTable, AICS_LAST_RESULTS_KEY_MAPPING);
+  } catch (error) {
+    throw error;
+  }
+}
 
 function decodeTable(rawTable, translation) {
   return rawTable
@@ -50,5 +60,6 @@ module.exports = {
   getTournaments,
   getTournamentDetails,
   getStandings,
+  getLastResults,
   getPlayers,
 };

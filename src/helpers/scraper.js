@@ -1,13 +1,13 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
 
-async function scrapeTableFromAICSWebSite(url) {
+async function scrapeTableFromAICSWebSite(url, idx = 0) {
   const response = await axios.get(url);
   const html = response.data;
   // Ora puoi utilizzare cheerio per estrarre la tabella
   const $ = cheerio.load(html);
   const divSezione = $(".sezione");
-  const table = divSezione.find("table").first();
+  const table = divSezione.find("table").eq(idx);
   // Array per memorizzare gli oggetti della tabella
   return htmlTableToJson($, table);
 }
