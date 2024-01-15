@@ -1,13 +1,32 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
 
-async function scrapeTableFromAICSWebSite(url, idx = 0) {
+async function scrapeWebSite(url) {
   const response = await axios.get(url);
   const html = response.data;
   // Ora puoi utilizzare cheerio per estrarre la tabella
-  const $ = cheerio.load(html);
-  const divSezione = $(".sezione");
-  const table = divSezione.find("table").eq(idx);
+  return cheerio.load(html);
+}
+
+async function scrapeHRefsFrommAICSWebSite(url) {
+  const $ = await scrapeWebSite(url);
+  const container = $(".sezione");
+  // Seleziona il primo elemento h2 all'interno della sezione
+  const firstH2 = container.find("h2").first();
+  // Trova tutti i link all'interno del primo h2
+  const links = firstH2.find("a");
+  const linkData = links.map((index, element) => {
+    const href = $(element).attr("href");
+    const text = $(element).text();
+    return { href, text };
+  }).get();
+  return linkData;
+}
+
+async function scrapeTableFromAICSWebSite(url, idx = 0) {
+  const $ = await scrapeWebSite(url);
+  const container = $(".sezione");
+  const table = container.find("table").eq(idx);
   // Array per memorizzare gli oggetti della tabella
   return htmlTableToJson($, table);
 }
@@ -45,5 +64,6 @@ function htmlTableToJson($, table) {
 }
 
 module.exports = {
+  scrapeHRefsFrommAICSWebSite,
   scrapeTableFromAICSWebSite,
 };
