@@ -1,13 +1,11 @@
-const {AICS_FUTSAL_TOURNAMENTS, AICS_PLAYERS_RANKING_KEY_MAPPING, AICS_TEAMS_RANKING_KEY_MAPPING, AICS_LAST_RESULTS_KEY_MAPPING} = require("../constants");
+const {AICS_BASE_URL, AICS_FUTSAL_TOURNAMENTS, AICS_PLAYERS_RANKING_KEY_MAPPING, AICS_TEAMS_RANKING_KEY_MAPPING, AICS_LAST_RESULTS_KEY_MAPPING} = require("../constants");
 const { scrapeTableFromAICSWebSite,scrapeHRefsFrommAICSWebSite } = require("../helpers/scraper");
 const objectUtils = require("../helpers/object");
 
-const baseUrl = "https://www.aicslucca.com";
-
-//https://www.aicslucca.com/calendario.php?id_girone=513&n_giornata=7
+const baseUrl = AICS_BASE_URL;
 
 const getTeamsRankingUrl = (id) => `${baseUrl}/homegirone.php?id=${id}`;
-const getPlayersRankingUrl = (id) => `${baseUrl}/marcatori.php?id_girone=${id}`;
+const getPlayersRankingRankingUrl = (id) => `${baseUrl}/marcatori.php?id_girone=${id}`;
 const getCalendarHomeUrl = (id) => `${baseUrl}/calendario.php?id_girone=${id}`;
 const getCalendarPageUrl = (id, page) => `${baseUrl}/calendario.php?id_girone=${id}&n_giornata=${page + 1}`
 
@@ -17,14 +15,14 @@ const getTournaments = () => {
 
 const getTournamentDetails = async (id) => {
   let tournamentDetails = {}
-  const standings = await getStandings(id);
+  const standings = await getTeamsRanking(id);
   const teams = standings.map(s => s.name);
   const tournamentEntry = AICS_FUTSAL_TOURNAMENTS.find(tournament => tournament.id === id)
   tournamentDetails = { teams,...tournamentEntry}
   return tournamentDetails
 }
 
-const getStandings = async (id) => {
+const getTeamsRanking = async (id) => {
   try {
     const url = getTeamsRankingUrl(id);
     const rawTable = await scrapeTableFromAICSWebSite(url);
@@ -34,9 +32,9 @@ const getStandings = async (id) => {
   }
 };
 
-const getPlayers = async (id) => {
+const getPlayersRanking = async (id) => {
   try {
-    const url = getPlayersRankingUrl(id);
+    const url = getPlayersRankingRankingUrl(id);
     const rawTable = await scrapeTableFromAICSWebSite(url);
     return decodeTable(rawTable, AICS_PLAYERS_RANKING_KEY_MAPPING);
   } catch (error) {
@@ -54,7 +52,7 @@ const getLastResults = async (id) => {
   }
 }
 
-const getResults = async (id, page = 0) => {
+const getMatchResults = async (id, page = 0) => {
   try {
     const url = getCalendarHomeUrl(id);
     const links = await scrapeHRefsFrommAICSWebSite(url);
@@ -80,8 +78,8 @@ function decodeTable(rawTable, translation) {
 module.exports = {
   getTournaments,
   getTournamentDetails,
-  getStandings,
+  getTeamsRanking,
   getLastResults,
-  getPlayers,
-  getResults
+  getPlayersRanking,
+  getMatchResults
 };

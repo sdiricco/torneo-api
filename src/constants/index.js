@@ -1,3 +1,5 @@
+const AICS_BASE_URL = process.env.AICS_BASE_URL
+
 const AICS_FUTSAL_TOURNAMENTS = [
   {
     name: "Amatori/Dilettanti Girone A",
@@ -97,6 +99,7 @@ const AICS_LAST_RESULTS_KEY_MAPPING = {
 };
 
 module.exports = {
+  AICS_BASE_URL,
   AICS_FUTSAL_TOURNAMENTS,
   AICS_TEAMS_RANKING_KEY_MAPPING,
   AICS_PLAYERS_RANKING_KEY_MAPPING,

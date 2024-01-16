@@ -29,41 +29,10 @@ const getTournamentDetails = async (req, res) => {
   }
 }
 
-const getStandings = async (req, res) => {
-  try {
-    const {id} = req.query
-    const data = await torneoService.getStandings(id);
-    res.send({
-      status: "OK",
-      data
-    });
-  } catch (error) {
-    res
-      .status(error?.status || 500)
-      .send({ status: "FAILED", data: { error: error?.message || error } });
-  }
-};
-
-
-const getLastResults = async (req, res) => {
-  try {
-    const {id} = req.query
-    const data = await torneoService.getLastResults(id);
-    res.send({
-      status: "OK",
-      data
-    });
-  } catch (error) {
-    res
-      .status(error?.status || 500)
-      .send({ status: "FAILED", data: { error: error?.message || error } });
-  }
-};
-
-const getResults = async (req, res) => {
+const getTeamsRanking = async (req, res) => {
   try {
     const {id} = req.params
-    const data = await torneoService.getResults(id);
+    const data = await torneoService.getTeamsRanking(id);
     res.send({
       status: "OK",
       data
@@ -75,10 +44,25 @@ const getResults = async (req, res) => {
   }
 };
 
-const getPlayers = async (req, res) => {
+const getMatchResults = async (req, res) => {
   try {
-    const {id} = req.query
-    const data = await torneoService.getPlayers(id);
+    const {id} = req.params
+    const data = await torneoService.getMatchResults(id);
+    res.send({
+      status: "OK",
+      data
+    });
+  } catch (error) {
+    res
+      .status(error?.status || 500)
+      .send({ status: "FAILED", data: { error: error?.message || error } });
+  }
+};
+
+const getPlayersRanking = async (req, res) => {
+  try {
+    const {id} = req.params
+    const data = await torneoService.getPlayersRanking(id);
     res.send({
       status: "OK",
       data
@@ -93,8 +77,7 @@ const getPlayers = async (req, res) => {
 module.exports = {
   getTournaments,
   getTournamentDetails,
-  getStandings,
-  getLastResults,
-  getPlayers,
-  getResults
+  getTeamsRanking,
+  getPlayersRanking,
+  getMatchResults
 };
