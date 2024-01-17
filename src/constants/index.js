@@ -98,10 +98,20 @@ const AICS_LAST_RESULTS_KEY_MAPPING = {
   Luogo: 'location'
 };
 
+const AICS_MATCH_RESULTS_KEY_MAPPING = {
+  Squadre: "teamA",
+  col2: "teamB",
+  Risultato: "score",
+  Data: "date",
+  Ora: 'time',
+  Luogo: 'location'
+};
+
 module.exports = {
   AICS_BASE_URL,
   AICS_FUTSAL_TOURNAMENTS,
   AICS_TEAMS_RANKING_KEY_MAPPING,
   AICS_PLAYERS_RANKING_KEY_MAPPING,
-  AICS_LAST_RESULTS_KEY_MAPPING
+  AICS_LAST_RESULTS_KEY_MAPPING,
+  AICS_MATCH_RESULTS_KEY_MAPPING
 };

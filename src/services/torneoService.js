@@ -1,6 +1,7 @@
-const {AICS_BASE_URL, AICS_FUTSAL_TOURNAMENTS, AICS_PLAYERS_RANKING_KEY_MAPPING, AICS_TEAMS_RANKING_KEY_MAPPING, AICS_LAST_RESULTS_KEY_MAPPING} = require("../constants");
+const {AICS_BASE_URL, AICS_FUTSAL_TOURNAMENTS, AICS_PLAYERS_RANKING_KEY_MAPPING, AICS_TEAMS_RANKING_KEY_MAPPING, AICS_LAST_RESULTS_KEY_MAPPING, AICS_MATCH_RESULTS_KEY_MAPPING} = require("../constants");
 const { scrapeTableFromAICSWebSite,scrapeHRefsFrommAICSWebSite } = require("../helpers/scraper");
 const objectUtils = require("../helpers/object");
+const moment = require('moment-timezone')
 
 const baseUrl = AICS_BASE_URL;
 
@@ -58,15 +59,33 @@ const getMatchResults = async (id, page = 0) => {
     const links = await scrapeHRefsFrommAICSWebSite(url);
     const actualPage = (links.length -1) - page;
     const pageUrl = getCalendarPageUrl(id, actualPage)
-    const rawTable = await scrapeTableFromAICSWebSite(pageUrl);
+    const rawTable = await scrapeTableFromAICSWebSite(pageUrl)
+    const decodedTable = decodeTable(rawTable, AICS_MATCH_RESULTS_KEY_MAPPING); 
+    const formattedTable = formatMatchResults(decodedTable)
     return {
-      values: rawTable,
+      values: formattedTable,
       pages: links.length,
       page: page
     }
   } catch (error) {
     throw error;
   }
+}
+
+function formatMatchResults(decodedTable=[]){
+  return decodedTable.map(item => {
+    const dateString = `${item.date} ${item.time}`
+    const date = moment(dateString, 'DD/MM/YYYY HH:mm').tz('Europe/Rome')
+    const [scoreA, scoreB] = item.score.split('-').map(Number);
+    const matchCompleted = item.score != '-'
+    return {
+      ...item,
+      dateUtc: date,
+      scoreA,
+      scoreB,
+      matchCompleted
+    }
+  })
 }
 
 function decodeTable(rawTable, translation) {
