@@ -75,12 +75,12 @@ const getMatchResults = async (id, page = 0) => {
 function formatMatchResults(decodedTable=[]){
   return decodedTable.map(item => {
     const dateString = `${item.date} ${item.time}`
-    const date = moment(dateString, 'DD/MM/YYYY HH:mm').tz('Europe/Rome')
+    const date = moment(dateString, 'DD/MM/YYYY HH:mm')
     const [scoreA, scoreB] = item.score.split('-').map(Number);
     const matchCompleted = item.score != '-'
     return {
       ...item,
-      dateUtc: date,
+      dateUtc: date.toDate().toUTCString(),
       scoreA,
       scoreB,
       matchCompleted
