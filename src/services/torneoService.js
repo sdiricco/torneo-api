@@ -2,6 +2,7 @@ const {AICS_BASE_URL, AICS_FUTSAL_TOURNAMENTS, AICS_PLAYERS_RANKING_KEY_MAPPING,
 const { scrapeTableFromAICSWebSite,scrapeHRefsFrommAICSWebSite } = require("../helpers/scraper");
 const objectUtils = require("../helpers/object");
 const moment = require('moment-timezone')
+const { DateTime } = require('luxon');
 
 const baseUrl = AICS_BASE_URL;
 
@@ -75,12 +76,12 @@ const getMatchResults = async (id, page = 0) => {
 function formatMatchResults(decodedTable=[]){
   return decodedTable.map(item => {
     const dateString = `${item.date} ${item.time}`
-    const date = moment(dateString, 'DD/MM/YYYY HH:mm')
-    const [scoreA, scoreB] = item.score.split('-').map(Number);
+    const date = DateTime.fromFormat(dateString, 'dd/MM/yyyy HH:mm', { zone: 'Europe/Rome' });
+    const [scoreA, scoreB] = splitScore(item.score)
     const matchCompleted = item.score != '-'
     return {
       ...item,
-      dateUtc: date.toDate().toUTCString(),
+      dateUtc: date.toUTC().toISO(),
       scoreA,
       scoreB,
       matchCompleted
@@ -92,6 +93,10 @@ function decodeTable(rawTable, translation) {
   return rawTable
     .map((obj) => objectUtils.removeSpacesFromKeys(obj))
     .map((obj) => objectUtils.decodeKeys(translation, obj));
+}
+
+function splitScore(score = ''){
+  return score.split('-').map(Number);
 }
 
 module.exports = {
