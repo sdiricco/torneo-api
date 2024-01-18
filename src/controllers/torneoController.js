@@ -59,6 +59,37 @@ const getMatchResults = async (req, res) => {
   }
 };
 
+
+const getLatestMatchResults = async (req, res) => {
+  try {
+    const {id} = req.params
+    const data = await torneoService.getLatestMatchResults(id);
+    res.send({
+      status: "OK",
+      data
+    });
+  } catch (error) {
+    res
+      .status(error?.status || 500)
+      .send({ status: "FAILED", data: { error: error?.message || error } });
+  }
+};
+
+const getNextMatches = async (req, res) => {
+  try {
+    const {id} = req.params
+    const data = await torneoService.getNextMatches(id);
+    res.send({
+      status: "OK",
+      data
+    });
+  } catch (error) {
+    res
+      .status(error?.status || 500)
+      .send({ status: "FAILED", data: { error: error?.message || error } });
+  }
+};
+
 const getPlayersRanking = async (req, res) => {
   try {
     const {id} = req.params
@@ -79,5 +110,7 @@ module.exports = {
   getTournamentDetails,
   getTeamsRanking,
   getPlayersRanking,
+  getLatestMatchResults,
+  getNextMatches,
   getMatchResults
 };

@@ -98,6 +98,15 @@ const AICS_LAST_RESULTS_KEY_MAPPING = {
   Luogo: 'location'
 };
 
+const AICS_NEXT_MATCHES_KEY_MAPPING = {
+  Giornata: "week",
+  Squadre: "teamA",
+  col3: "teamB",
+  Data: "date",
+  Ora: 'time',
+  Luogo: 'location'
+};
+
 const AICS_MATCH_RESULTS_KEY_MAPPING = {
   Squadre: "teamA",
   col2: "teamB",
@@ -113,5 +122,6 @@ module.exports = {
   AICS_TEAMS_RANKING_KEY_MAPPING,
   AICS_PLAYERS_RANKING_KEY_MAPPING,
   AICS_LAST_RESULTS_KEY_MAPPING,
-  AICS_MATCH_RESULTS_KEY_MAPPING
+  AICS_MATCH_RESULTS_KEY_MAPPING,
+  AICS_NEXT_MATCHES_KEY_MAPPING
 };
