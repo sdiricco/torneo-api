@@ -13,12 +13,16 @@ const {
 const {
   scrapeTableFromAICSWebSite,
   scrapeHRefsFrommAICSWebSite,
+  scrapeHRefsTeamsFrommAICSWebSite
+  
 } = require("../helpers/scraper");
 const objectUtils = require("../helpers/object");
 const { DateTime } = require("luxon");
 
 const baseUrl = AICS_BASE_URL;
 
+const getTeamsUrl =  () =>`${baseUrl}/vedisquadre.php`
+const getTeamDetailsUrl = (id) =>`${baseUrl}/vedisquadre.php?=${id}`
 const getTournamentHomeUrl = (id) => `${baseUrl}/homegirone.php?id=${id}`;
 const getDisciplinaryMeasurementsUrl = (id) => `${baseUrl}/provv.php?id_girone=${id}`
 const getPlayersRankingRankingUrl = (id) =>
@@ -30,6 +34,34 @@ const getCalendarPageUrl = (id, page) =>
 const getTournaments = () => {
   return AICS_FUTSAL_TOURNAMENTS;
 };
+
+const getTeams = async () => {
+  try {
+    const url = getTeamsUrl();
+    const rawTable = await scrapeHRefsTeamsFrommAICSWebSite(url);
+    return rawTable.map(item => {
+      const regex = /id=(\d+)/;
+      const match = item.href.match(regex);
+      const id = match && Number(match[1])
+      return {
+        ...item,
+        id
+      }
+    })
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getTeamDetails = async (id) => {
+  try {
+    const url = getTeamDetailsUrl(id);
+    return url;
+  } catch (error) {
+    throw error;
+  }
+};
+
 
 const getTournamentDetails = async (id) => {
   let tournamentDetails = {};
@@ -162,6 +194,8 @@ function splitScore(score = "") {
 }
 
 module.exports = {
+  getTeams,
+  getTeamDetails,
   getTournaments,
   getTournamentDetails,
   getTeamsRanking,

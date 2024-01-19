@@ -23,6 +23,20 @@ async function scrapeHRefsFrommAICSWebSite(url) {
   return linkData;
 }
 
+async function scrapeHRefsTeamsFrommAICSWebSite(url) {
+  const $ = await scrapeWebSite(url);
+  const container = $(".sezione");
+  // Trova tutti i link all'interno del primo h2
+  const links = container.find("p");
+  const linkData = links.map((index, element) => {
+    const hrefElem = $(element).find("a")
+    const href = $(hrefElem).attr("href");
+    const text = $(hrefElem).text().trim();
+    return { href, text };
+  }).get();
+  return linkData;
+}
+
 async function scrapeTableFromAICSWebSite(url, idx = 0) {
   const $ = await scrapeWebSite(url);
   const container = $(".sezione");
@@ -64,6 +78,7 @@ function htmlTableToJson($, table) {
 }
 
 module.exports = {
+  scrapeHRefsTeamsFrommAICSWebSite,
   scrapeHRefsFrommAICSWebSite,
   scrapeTableFromAICSWebSite,
 };

@@ -3,6 +3,8 @@ const torneoController = require("../../controllers/torneoController");
 
 const router = express.Router();
 
+router.get("/teams", torneoController.getTeams)
+router.get("/teams/:id", torneoController.getTeamDetails)
 router.get("/tournaments", torneoController.getTournaments)
 router.get("/tournaments/:id", torneoController.getTournamentDetails)
 router.get("/tournaments/:id/teams-ranking", torneoController.getTeamsRanking);
