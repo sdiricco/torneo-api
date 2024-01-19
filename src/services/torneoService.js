@@ -5,19 +5,22 @@ const {
   AICS_TEAMS_RANKING_KEY_MAPPING,
   AICS_LAST_RESULTS_KEY_MAPPING,
   AICS_MATCH_RESULTS_KEY_MAPPING,
-  AICS_NEXT_MATCHES_KEY_MAPPING
+  AICS_NEXT_MATCHES_KEY_MAPPING,
+  AICS_SUSPANSIONS_KEY_MAPPING,
+  AICS_WARNINGS_KEY_MAPPING,
+  AICS_SPECIAL_MEASURES_KEY_MAPPING
 } = require("../constants");
 const {
   scrapeTableFromAICSWebSite,
   scrapeHRefsFrommAICSWebSite,
 } = require("../helpers/scraper");
 const objectUtils = require("../helpers/object");
-const moment = require("moment-timezone");
 const { DateTime } = require("luxon");
 
 const baseUrl = AICS_BASE_URL;
 
 const getTournamentHomeUrl = (id) => `${baseUrl}/homegirone.php?id=${id}`;
+const getDisciplinaryMeasurementsUrl = (id) => `${baseUrl}/provv.php?id_girone=${id}`
 const getPlayersRankingRankingUrl = (id) =>
   `${baseUrl}/marcatori.php?id_girone=${id}`;
 const getCalendarHomeUrl = (id) => `${baseUrl}/calendario.php?id_girone=${id}`;
@@ -68,6 +71,25 @@ async function getNextMatches(id) {
     const decodedTable = decodeTable(rawTable, AICS_NEXT_MATCHES_KEY_MAPPING);
     const formattedTable = formatMatchResults(decodedTable);
     return formattedTable;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function getDisciplinaryMeasurements(id) {
+  try {
+    const url = getDisciplinaryMeasurementsUrl(id);
+    const rawSuspansionsTable = await scrapeTableFromAICSWebSite(url, 0);
+    const rawWarningsTable = await scrapeTableFromAICSWebSite(url, 1);
+    const rawSpecialMeasuresTable = await scrapeTableFromAICSWebSite(url, 2);
+    const decodedSuspansionsTable = decodeTable(rawSuspansionsTable, AICS_SUSPANSIONS_KEY_MAPPING);
+    const decodedWarningsTable = decodeTable(rawWarningsTable, AICS_WARNINGS_KEY_MAPPING);
+    const decodedSpecialMeasuresTable = decodeTable(rawSpecialMeasuresTable, AICS_SPECIAL_MEASURES_KEY_MAPPING);
+    return {
+      suspensions: decodedSuspansionsTable,
+      warnings: decodedWarningsTable,
+      specialMeasures: decodedSpecialMeasuresTable
+    };
   } catch (error) {
     throw error;
   }
@@ -147,4 +169,5 @@ module.exports = {
   getPlayersRanking,
   getMatchResults,
   getNextMatches,
+  getDisciplinaryMeasurements
 };

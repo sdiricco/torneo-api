@@ -90,6 +90,21 @@ const getNextMatches = async (req, res) => {
   }
 };
 
+const getDisciplinaryMeasurements = async (req, res) => {
+  try {
+    const {id} = req.params
+    const data = await torneoService.getDisciplinaryMeasurements(id);
+    res.send({
+      status: "OK",
+      data
+    });
+  } catch (error) {
+    res
+      .status(error?.status || 500)
+      .send({ status: "FAILED", data: { error: error?.message || error } });
+  }
+};
+
 const getPlayersRanking = async (req, res) => {
   try {
     const {id} = req.params
@@ -112,5 +127,6 @@ module.exports = {
   getPlayersRanking,
   getLatestMatchResults,
   getNextMatches,
-  getMatchResults
+  getMatchResults,
+  getDisciplinaryMeasurements
 };
