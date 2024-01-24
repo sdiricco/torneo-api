@@ -64,14 +64,11 @@ const getTeamDetails = async (id) => {
 
 
 const getTournamentDetails = async (id) => {
-  let tournamentDetails = {};
-  const standings = await getTeamsRanking(id);
-  const teams = standings.map((s) => s.name);
-  const tournamentEntry = AICS_FUTSAL_TOURNAMENTS.find(
-    (tournament) => tournament.id === id
-  );
-  tournamentDetails = { teams, ...tournamentEntry };
-  return tournamentDetails;
+  const tournamentEntry = AICS_FUTSAL_TOURNAMENTS.find(t => t.id === id)
+  const teamsRanking = await getTeamsRanking(id);
+  const latestMatches = await getLatestMatchResults(id);
+  const nextMatches = await getNextMatches(id);
+  return { ...tournamentEntry, teamsRanking, latestMatches, nextMatches };
 };
 
 const getTeamsRanking = async (id) => {
@@ -101,37 +98,50 @@ async function getNextMatches(id) {
     const url = getTournamentHomeUrl(id);
     const rawTable = await scrapeTableFromAICSWebSite(url, 2);
     const decodedTable = decodeTable(rawTable, AICS_NEXT_MATCHES_KEY_MAPPING);
-    const formattedTable = formatMatchResults(decodedTable);
+    const formattedTable = formatNextMatchesResults(decodedTable);
     return formattedTable;
   } catch (error) {
     throw error;
   }
 }
 
-async function getDisciplinaryMeasurements(id) {
+
+const getPlayersStats = async (id) => {
   try {
-    const url = getDisciplinaryMeasurementsUrl(id);
+    let url = getPlayersRankingRankingUrl(id);
+    const rawPlayersRankingTable = await scrapeTableFromAICSWebSite(url);
+    const decodedPlayersRankingTable = decodeTable(rawPlayersRankingTable, AICS_PLAYERS_RANKING_KEY_MAPPING);
+
+    url = getDisciplinaryMeasurementsUrl(id);
     const rawSuspansionsTable = await scrapeTableFromAICSWebSite(url, 0);
     const rawWarningsTable = await scrapeTableFromAICSWebSite(url, 1);
     const rawSpecialMeasuresTable = await scrapeTableFromAICSWebSite(url, 2);
     const decodedSuspansionsTable = decodeTable(rawSuspansionsTable, AICS_SUSPANSIONS_KEY_MAPPING);
     const decodedWarningsTable = decodeTable(rawWarningsTable, AICS_WARNINGS_KEY_MAPPING);
     const decodedSpecialMeasuresTable = decodeTable(rawSpecialMeasuresTable, AICS_SPECIAL_MEASURES_KEY_MAPPING);
-    return {
-      suspensions: decodedSuspansionsTable,
-      warnings: decodedWarningsTable,
-      specialMeasures: decodedSpecialMeasuresTable
-    };
-  } catch (error) {
-    throw error;
-  }
-}
 
-const getPlayersRanking = async (id) => {
-  try {
-    const url = getPlayersRankingRankingUrl(id);
-    const rawTable = await scrapeTableFromAICSWebSite(url);
-    return decodeTable(rawTable, AICS_PLAYERS_RANKING_KEY_MAPPING);
+    const playersStats = decodedPlayersRankingTable.map(p => {
+      const warningsCount = decodedWarningsTable.find(pw => pw.firstName === p.firstName && pw.lastName === p.lastName)?.number || 0
+      const specialMeasureEntry = decodedSpecialMeasuresTable.find(psm => psm.firstName === p.firstName && psm.lastName === p.lastName)
+      const specialMeasure = specialMeasureEntry ? {
+        startDate: specialMeasureEntry.startDate,
+        endDate: specialMeasureEntry.endDate,
+        notes: specialMeasureEntry.notes
+      } : undefined
+      const suspansionEntry = decodedSuspansionsTable.find(ps => ps.firstName === p.firstName && ps.lastName === p.lastName)
+      const suspansion = suspansionEntry ? {
+        startDate: suspansionEntry.startDate,
+        weeks: suspansionEntry.weeks,
+      } : undefined
+      return{
+        ...p,
+        warningsCount,
+        suspansion,
+        specialMeasure
+      }
+    })
+
+    return playersStats
   } catch (error) {
     throw error;
   }
@@ -164,21 +174,27 @@ function formatMatchResults(decodedTable = []) {
     const date = DateTime.fromFormat(dateString, "dd/MM/yyyy HH:mm", {
       zone: "Europe/Rome",
     });
-    let scoreA = undefined;
-    let scoreB = undefined;
-    let matchCompleted = undefined;
-    if (item.score) {
-      const result = splitScore(item.score);
-      scoreA = result[0];
-      scoreB = result[1];
-      matchCompleted = item.score != "-";
-    }
+    const result = splitScore(item.score);
+    const scoreA = result[0];
+    const scoreB = result[1];
     return {
       ...item,
       dateUtc: date.toUTC().toISO(),
       scoreA,
       scoreB,
-      matchCompleted,
+    };
+  });
+}
+
+function formatNextMatchesResults(decodedTable = []) {
+  return decodedTable.map((item) => {
+    const dateString = `${item.date} ${item.time}`;
+    const date = DateTime.fromFormat(dateString, "dd/MM/yyyy HH:mm", {
+      zone: "Europe/Rome",
+    });
+    return {
+      ...item,
+      dateUtc: date.toUTC().toISO(),
     };
   });
 }
@@ -200,8 +216,7 @@ module.exports = {
   getTournamentDetails,
   getTeamsRanking,
   getLatestMatchResults,
-  getPlayersRanking,
+  getPlayersStats,
   getMatchResults,
   getNextMatches,
-  getDisciplinaryMeasurements
 };

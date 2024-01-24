@@ -59,20 +59,6 @@ const getTournamentDetails = async (req, res) => {
   }
 }
 
-const getTeamsRanking = async (req, res) => {
-  try {
-    const {id} = req.params
-    const data = await torneoService.getTeamsRanking(id);
-    res.send({
-      status: "OK",
-      data
-    });
-  } catch (error) {
-    res
-      .status(error?.status || 500)
-      .send({ status: "FAILED", data: { error: error?.message || error } });
-  }
-};
 
 const getMatchResults = async (req, res) => {
   try {
@@ -90,55 +76,12 @@ const getMatchResults = async (req, res) => {
 };
 
 
-const getLatestMatchResults = async (req, res) => {
-  try {
-    const {id} = req.params
-    const data = await torneoService.getLatestMatchResults(id);
-    res.send({
-      status: "OK",
-      data
-    });
-  } catch (error) {
-    res
-      .status(error?.status || 500)
-      .send({ status: "FAILED", data: { error: error?.message || error } });
-  }
-};
 
-const getNextMatches = async (req, res) => {
-  try {
-    const {id} = req.params
-    const data = await torneoService.getNextMatches(id);
-    res.send({
-      status: "OK",
-      data
-    });
-  } catch (error) {
-    res
-      .status(error?.status || 500)
-      .send({ status: "FAILED", data: { error: error?.message || error } });
-  }
-};
 
-const getDisciplinaryMeasurements = async (req, res) => {
+const getPlayersStats = async (req, res) => {
   try {
     const {id} = req.params
-    const data = await torneoService.getDisciplinaryMeasurements(id);
-    res.send({
-      status: "OK",
-      data
-    });
-  } catch (error) {
-    res
-      .status(error?.status || 500)
-      .send({ status: "FAILED", data: { error: error?.message || error } });
-  }
-};
-
-const getPlayersRanking = async (req, res) => {
-  try {
-    const {id} = req.params
-    const data = await torneoService.getPlayersRanking(id);
+    const data = await torneoService.getPlayersStats(id);
     res.send({
       status: "OK",
       data
@@ -155,10 +98,6 @@ module.exports = {
   getTeamDetails,
   getTournaments,
   getTournamentDetails,
-  getTeamsRanking,
-  getPlayersRanking,
-  getLatestMatchResults,
-  getNextMatches,
+  getPlayersStats,
   getMatchResults,
-  getDisciplinaryMeasurements
 };
