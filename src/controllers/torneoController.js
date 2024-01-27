@@ -60,10 +60,10 @@ const getTournamentDetails = async (req, res) => {
 }
 
 
-const getMatchResults = async (req, res) => {
+const getTournamentCalendar = async (req, res) => {
   try {
-    const {id} = req.params
-    const data = await torneoService.getMatchResults(id);
+    const {id, week} = req.params
+    const data = await torneoService.getTournamentCalendar(id, week);
     res.send({
       status: "OK",
       data
@@ -99,5 +99,5 @@ module.exports = {
   getTournaments,
   getTournamentDetails,
   getPlayersStats,
-  getMatchResults,
+  getTournamentCalendar,
 };

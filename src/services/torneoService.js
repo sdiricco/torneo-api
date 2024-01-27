@@ -28,8 +28,8 @@ const getDisciplinaryMeasurementsUrl = (id) => `${baseUrl}/provv.php?id_girone=$
 const getPlayersRankingRankingUrl = (id) =>
   `${baseUrl}/marcatori.php?id_girone=${id}`;
 const getCalendarHomeUrl = (id) => `${baseUrl}/calendario.php?id_girone=${id}`;
-const getCalendarPageUrl = (id, page) =>
-  `${baseUrl}/calendario.php?id_girone=${id}&n_giornata=${page + 1}`;
+const getCalendarPageUrl = (id, week) =>
+  `${baseUrl}/calendario.php?id_girone=${id}&n_giornata=${week}`;
 
 const getTournaments = () => {
   return AICS_FUTSAL_TOURNAMENTS;
@@ -147,19 +147,21 @@ const getPlayersStats = async (id) => {
   }
 };
 
-const getMatchResults = async (id, page = 0) => {
+//if week = null return latest week
+const getTournamentCalendar = async (id, week = null) => {
   try {
     const url = getCalendarHomeUrl(id);
     const links = await scrapeHRefsFrommAICSWebSite(url);
-    const actualPage = links.length - 1 - page;
-    const pageUrl = getCalendarPageUrl(id, actualPage);
+    const actualWeek = week && Number(week) || links.length
+    const pageUrl = getCalendarPageUrl(id, actualWeek);
     const rawTable = await scrapeTableFromAICSWebSite(pageUrl);
     const decodedTable = decodeTable(rawTable, AICS_MATCH_RESULTS_KEY_MAPPING);
     const formattedTable = formatMatchResults(decodedTable);
     return {
       values: formattedTable,
-      pages: links.length,
-      page: page,
+      matchPerWeek: formattedTable.length,
+      week: actualWeek,
+      weekCount: links.length
     };
   } catch (error) {
     throw error;
@@ -217,6 +219,6 @@ module.exports = {
   getTeamsRanking,
   getLatestMatchResults,
   getPlayersStats,
-  getMatchResults,
+  getTournamentCalendar,
   getNextMatches,
 };

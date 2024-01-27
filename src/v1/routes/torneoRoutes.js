@@ -8,7 +8,7 @@ router.get("/teams/:id", torneoController.getTeamDetails)
 router.get("/tournaments", torneoController.getTournaments)
 router.get("/tournaments/:id", torneoController.getTournamentDetails)
 router.get("/tournaments/:id/players", torneoController.getPlayersStats);
-router.get("/tournaments/:id/calendar", torneoController.getMatchResults);
+router.get("/tournaments/:id/calendar/:week", torneoController.getTournamentCalendar);
 
 
 
