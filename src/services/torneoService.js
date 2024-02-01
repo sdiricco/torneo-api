@@ -29,34 +29,34 @@ const getCalendarPageUrl = (id, week) => `${baseUrl}/calendario.php?id_girone=${
 const getTournaments = async () => {
   let tournaments = [];
 
-  console.lo('[Get tournaments from DB]')
+  console.log("[Get tournaments from DB]");
   const t = await getTournamentsFromDB();
 
   const now = DateTime.now();
   const lastUpdateDate = DateTime.fromJSDate(t.lastUpdate);
   const days = now.diff(lastUpdateDate, "days").days;
 
-  console.log('[Field lastUpdate from <tournaments> collection]', lastUpdateDate)
-  console.log('[Now date]', now)
+  console.log("[Field lastUpdate from <tournaments> collection]", lastUpdateDate);
+  console.log("[Now date]", now);
 
-  console.log('[Check if tournaments are updated]')
+  console.log("[Check if tournaments are updated]");
 
   if (days >= 1) {
-    console.log("[The diff date (now - lastUpdate) >= 1 days]")
-    console.log("[Scraping tournaments from AICS webpage]")
+    console.log("[The diff date (now - lastUpdate) >= 1 days]");
+    console.log("[Scraping tournaments from AICS webpage]");
     tournaments = await scrapeTournaments();
     await updateTournamentsToDB(tournaments);
-  }else{
-    console.log("[The diff date (now - lastUpdate) <= 1 days]")
-    console.log("[Using tournaments from DB]")
+  } else {
+    console.log("[The diff date (now - lastUpdate) <= 1 days]");
+    console.log("[Using tournaments from DB]");
     tournaments = t.values;
   }
   return tournaments;
 };
 
 const getTournamentsLegacy = () => {
-  return AICS_FUTSAL_TOURNAMENTS
-} 
+  return AICS_FUTSAL_TOURNAMENTS;
+};
 
 const getTeams = async () => {
   try {
@@ -203,28 +203,26 @@ async function scrapeTournaments() {
     const id = item.href.split("=")[1];
 
     // Estrai la category dal primo pezzo del path delimitato da '>'
-    const pathList = item.path.split(">")
-    pathList.splice(0,1);
+    const pathList = item.path.split(">");
+    pathList.splice(0, 1);
 
     const levelCount = pathList.length;
 
     const category = pathList[0].trim();
     let name = pathList[pathList.length - 1].trim();
 
-    let location = '';
-    
-    if (category === 'CALCIO A 5') {
-      location = pathList[1]
+    let location = "";
+
+    if (category === "CALCIO A 5") {
+      location = pathList[1];
       if (levelCount === 4) {
-        name = `${pathList[2]} - ${pathList[3]}`
+        name = `${pathList[2]} - ${pathList[3]}`;
       }
-    }
-    else if (category === 'CALCIO A 11') {
+    } else if (category === "CALCIO A 11") {
       if (levelCount === 3) {
-        name = pathList[1] !== pathList[2] ? `${pathList[1]} - ${pathList[2]}` : pathList[1]
-      }
-      else if (levelCount === 4) {
-        name = `${pathList[1]} - ${pathList[2]} - ${pathList[3]}`
+        name = pathList[1] !== pathList[2] ? `${pathList[1]} - ${pathList[2]}` : pathList[1];
+      } else if (levelCount === 4) {
+        name = `${pathList[1]} - ${pathList[2]} - ${pathList[3]}`;
       }
     }
 
@@ -234,7 +232,7 @@ async function scrapeTournaments() {
       levelCount,
       category,
       name,
-      location
+      location,
     };
   });
   return dataDecoded;
@@ -242,7 +240,7 @@ async function scrapeTournaments() {
 
 async function updateTournamentsToDB(dataDecoded = []) {
   const client = db.create();
-  await client.connect()
+  await client.connect();
   const databaseName = client.db("aics");
   const tournamentsCollection = databaseName.collection("tournaments");
   const data = {
@@ -313,5 +311,5 @@ module.exports = {
   getPlayersStats,
   getTournamentCalendar,
   getNextMatches,
-  getTournamentsLegacy
+  getTournamentsLegacy,
 };
