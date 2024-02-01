@@ -2,7 +2,21 @@ const torneoService = require("../services/torneoService");
 
 const getTournaments = (req, res) => {
   try {
-    const data = torneoService.getTournaments();
+    const data = torneoService.getTournamentsLegacy();
+    res.send({
+      status: "OK",
+      data
+    });
+  } catch (error) {
+    res
+      .status(error?.status || 500)
+      .send({ status: "FAILED", data: { error: error?.message || error } });
+  }
+}
+
+const getTournamentsV2 = async (req, res) => {
+  try {
+    const data = await torneoService.getTournaments();
     res.send({
       status: "OK",
       data
@@ -97,6 +111,7 @@ module.exports = {
   getTeams,
   getTeamDetails,
   getTournaments,
+  getTournamentsV2,
   getTournamentDetails,
   getPlayersStats,
   getTournamentCalendar,
