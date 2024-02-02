@@ -5,105 +5,99 @@ const getTournaments = (req, res) => {
     const data = torneoService.getTournamentsLegacy();
     res.send({
       status: "OK",
-      data
+      data,
     });
   } catch (error) {
-    res
-      .status(error?.status || 500)
-      .send({ status: "FAILED", data: { error: error?.message || error } });
+    res.status(error?.status || 500).send({ status: "FAILED", data: { error: error?.message || error } });
   }
-}
+};
 
 const getTournamentsV2 = async (req, res) => {
   try {
     const data = await torneoService.getTournaments();
     res.send({
       status: "OK",
-      data
+      data,
     });
   } catch (error) {
-    res
-      .status(error?.status || 500)
-      .send({ status: "FAILED", data: { error: error?.message || error } });
+    res.status(error?.status || 500).send({ status: "FAILED", data: { error: error?.message || error } });
   }
-}
+};
 
 const getTeams = async (req, res) => {
   try {
     const data = await torneoService.getTeams();
     res.send({
       status: "OK",
-      data
+      data,
     });
   } catch (error) {
-    res
-      .status(error?.status || 500)
-      .send({ status: "FAILED", data: { error: error?.message || error } });
-  }
-}
-
-const getTeamDetails = async (req, res) => {
-  try {
-    const {id} = req.params
-    const data = await torneoService.getTeamDetails(id);
-    res.send({
-      status: "OK",
-      data
-    });
-  } catch (error) {
-    res
-      .status(error?.status || 500)
-      .send({ status: "FAILED", data: { error: error?.message || error } });
-  }
-}
-
-
-const getTournamentDetails = async (req, res) => {
-  try {
-    const {id} = req.params
-    const data = await torneoService.getTournamentDetails(id);
-    res.send({
-      status: "OK",
-      data
-    });
-  } catch (error) {
-    res
-      .status(error?.status || 500)
-      .send({ status: "FAILED", data: { error: error?.message || error } });
-  }
-}
-
-
-const getTournamentCalendar = async (req, res) => {
-  try {
-    const {id, week} = req.params
-    const data = await torneoService.getTournamentCalendar(id, week);
-    res.send({
-      status: "OK",
-      data
-    });
-  } catch (error) {
-    res
-      .status(error?.status || 500)
-      .send({ status: "FAILED", data: { error: error?.message || error } });
+    res.status(error?.status || 500).send({ status: "FAILED", data: { error: error?.message || error } });
   }
 };
 
+const getTeamDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = await torneoService.getTeamDetails(id);
+    res.send({
+      status: "OK",
+      data,
+    });
+  } catch (error) {
+    res.status(error?.status || 500).send({ status: "FAILED", data: { error: error?.message || error } });
+  }
+};
 
+const getTournamentDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = await torneoService.getTournamentDetails(id);
+    res.send({
+      status: "OK",
+      data,
+    });
+  } catch (error) {
+    res.status(error?.status || 500).send({ status: "FAILED", data: { error: error?.message || error } });
+  }
+};
 
+const getTournamentDetailsV2 = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = await torneoService.getTournamentDetailsV2(id);
+    res.send({
+      status: "OK",
+      data,
+    });
+  } catch (error) {
+    res.status(error?.status || 500).send({ status: "FAILED", data: { error: error?.message || error } });
+  }
+};
+
+const getTournamentCalendar = async (req, res) => {
+  try {
+    const { id, week } = req.params;
+    const data = await torneoService.getTournamentCalendar(id, week);
+    res.send({
+      status: "OK",
+      data,
+    });
+  } catch (error) {
+    res.status(error?.status || 500).send({ status: "FAILED", data: { error: error?.message || error } });
+  }
+};
 
 const getPlayersStats = async (req, res) => {
   try {
-    const {id} = req.params
+    const { id } = req.params;
     const data = await torneoService.getPlayersStats(id);
     res.send({
       status: "OK",
-      data
+      data,
     });
   } catch (error) {
-    res
-      .status(error?.status || 500)
-      .send({ status: "FAILED", data: { error: error?.message || error } });
+    res.status(error?.status || 500).send({ status: "FAILED", data: { error: error?.message || error } });
   }
 };
 
@@ -115,4 +109,5 @@ module.exports = {
   getTournamentDetails,
   getPlayersStats,
   getTournamentCalendar,
+  getTournamentDetailsV2,
 };
