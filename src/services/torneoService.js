@@ -95,7 +95,20 @@ const getTeamsRanking = async (id) => {
   try {
     const url = getTournamentHomeUrl(id);
     const rawTable = await scrapeTableFromAICSWebSite(url);
-    return decodeTable(rawTable, AICS_TEAMS_RANKING_KEY_MAPPING);
+    const decodedTable = decodeTable(rawTable, AICS_TEAMS_RANKING_KEY_MAPPING);
+    const formattedTable = decodedTable.map((t) => {
+      return {
+        ...t,
+        points: t.points && Number(t.points),
+        matches: t.matches && Number(t.matches),
+        won_matches: t.won_matches && Number(t.won_matches),
+        drawn_matches: t.drawn_matches && Number(t.drawn_matches),
+        lost_matches: t.lost_matches && Number(t.lost_matches),
+        goals_scored: t.goals_scored && Number(t.goals_scored),
+        goals_conceded: t.goals_conceded && Number(t.goals_conceded),
+      };
+    });
+    return formattedTable;
   } catch (error) {
     throw error;
   }
@@ -158,6 +171,7 @@ const getPlayersStats = async (id) => {
         : undefined;
       return {
         ...p,
+        goal: p.goal && Number(p.goal),
         warningsCount,
         suspansion,
         specialMeasure,
