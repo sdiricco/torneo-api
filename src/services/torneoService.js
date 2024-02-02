@@ -54,10 +54,6 @@ const getTournaments = async () => {
   return tournaments;
 };
 
-const getTournamentsLegacy = () => {
-  return AICS_FUTSAL_TOURNAMENTS;
-};
-
 const getTeams = async () => {
   try {
     const url = getTeamsUrl();
@@ -86,14 +82,6 @@ const getTeamDetails = async (id) => {
 };
 
 const getTournamentDetails = async (id) => {
-  const tournamentEntry = AICS_FUTSAL_TOURNAMENTS.find((t) => t.id === id);
-  const teamsRanking = await getTeamsRanking(id);
-  const latestMatches = await getLatestMatchResults(id);
-  const nextMatches = await getNextMatches(id);
-  return { ...tournamentEntry, teamsRanking, latestMatches, nextMatches };
-};
-
-const getTournamentDetailsV2 = async (id) => {
   console.log("[Get tournaments from DB]");
   const t = await getTournamentsFromDB();
   const tournamentEntry = t.values.find((t) => t.id === id);
@@ -321,6 +309,4 @@ module.exports = {
   getPlayersStats,
   getTournamentCalendar,
   getNextMatches,
-  getTournamentsLegacy,
-  getTournamentDetailsV2,
 };
