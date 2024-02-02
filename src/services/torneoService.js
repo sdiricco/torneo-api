@@ -93,6 +93,16 @@ const getTournamentDetails = async (id) => {
   return { ...tournamentEntry, teamsRanking, latestMatches, nextMatches };
 };
 
+const getTournamentDetailsV2 = async (id) => {
+  console.log("[Get tournaments from DB]");
+  const t = await getTournamentsFromDB();
+  const tournamentEntry = t.values.find((t) => t.id === id);
+  const teamsRanking = await getTeamsRanking(id);
+  const latestMatches = await getLatestMatchResults(id);
+  const nextMatches = await getNextMatches(id);
+  return { ...tournamentEntry, teamsRanking, latestMatches, nextMatches };
+};
+
 const getTeamsRanking = async (id) => {
   try {
     const url = getTournamentHomeUrl(id);
@@ -312,4 +322,5 @@ module.exports = {
   getTournamentCalendar,
   getNextMatches,
   getTournamentsLegacy,
+  getTournamentDetailsV2,
 };
