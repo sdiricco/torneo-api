@@ -1,7 +1,8 @@
-const { MongoClient, ServerApiVersion } = require("mongodb");
+import { MongoClient, ServerApiVersion } from "mongodb";
+
 const uri = "mongodb+srv://sdiricco:4utF98DFcYuHMYP8@cluster0.7ooa4te.mongodb.net/?retryWrites=true&w=majority";
 
-function create() {
+function create(): MongoClient {
   const client = new MongoClient(uri, {
     serverApi: {
       version: ServerApiVersion.v1,
@@ -12,6 +13,4 @@ function create() {
   return client;
 }
 
-module.exports = {
-    create,
-}
+export { create };

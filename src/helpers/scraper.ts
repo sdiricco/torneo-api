@@ -1,20 +1,25 @@
-const axios = require("axios");
-const cheerio = require("cheerio");
-const {AICS_BASE_URL} = require("../constants/index")
+import axios from "axios";
+import cheerio from "cheerio";
 
+import { AICS_BASE_URL } from "../constants/index";
 
-async function scrapeWebSite(url) {
+async function scrapeWebSite(url: string): Promise<cheerio.Root> {
   const response = await axios.get(url);
   const html = response.data;
-  // Ora puoi utilizzare cheerio per estrarre la tabella
   return cheerio.load(html);
 }
 
-async function scrapeHRefsTournaments(url, currentPath = '') {
+interface ITournamentLink {
+  text: string;
+  href: string;
+  path: string;
+}
+
+async function scrapeHRefsTournaments(url: string, currentPath = ""): Promise<ITournamentLink[]> {
   console.log("url", url);
   console.log("currentPath", currentPath);
   const $ = await scrapeWebSite(url);
-  const data = [];
+  const data: ITournamentLink[] = [];
 
   const elements = $(".sezione ul li a");
   for (let i = 0; i < elements.length; i++) {
@@ -22,12 +27,10 @@ async function scrapeHRefsTournaments(url, currentPath = '') {
     const text = $(element).text().trim();
     const href = $(element).attr("href");
     const newPath = `${currentPath}>${text}`;
-  
-    // Se l'href soddisfa la condizione di stop, aggiungi solo l'ultimo livello
-    if (href.includes("homegirone")) {
+
+    if (href && href.includes("homegirone")) {
       data.push({ text, href, path: newPath });
     } else {
-      // Altrimenti, effettua la ricorsione con il nuovo URL e il percorso aggiornato
       const elems = await scrapeHRefsTournaments(`${AICS_BASE_URL}/${href}`, newPath);
       data.push(...elems);
     }
@@ -36,15 +39,18 @@ async function scrapeHRefsTournaments(url, currentPath = '') {
   return data;
 }
 
-async function scrapeHRefsFrommAICSWebSite(url) {
+interface ILink {
+  href: string;
+  text: string;
+}
+
+async function scrapeHRefsFrommAICSWebSite(url: string): Promise<ILink[]> {
   const $ = await scrapeWebSite(url);
   const container = $(".sezione");
-  // Seleziona il primo elemento h2 all'interno della sezione
   const firstH2 = container.find("h2").first();
-  // Trova tutti i link all'interno del primo h2
   const links = firstH2.find("a");
-  const linkData = links
-    .map((index, element) => {
+  const linkData: ILink[] = links
+    .map((_index, element) => {
       const href = $(element).attr("href");
       const text = $(element).text();
       return { href, text };
@@ -53,10 +59,9 @@ async function scrapeHRefsFrommAICSWebSite(url) {
   return linkData;
 }
 
-async function scrapeHRefsTeamsFrommAICSWebSite(url) {
+async function scrapeHRefsTeamsFrommAICSWebSite(url: string): Promise<any[]> {
   const $ = await scrapeWebSite(url);
   const container = $(".sezione");
-  // Trova tutti i link all'interno del primo h2
   const links = container.find("p");
   const linkData = links
     .map((index, element) => {
@@ -69,32 +74,28 @@ async function scrapeHRefsTeamsFrommAICSWebSite(url) {
   return linkData;
 }
 
-async function scrapeTableFromAICSWebSite(url, idx = 0) {
+async function scrapeTableFromAICSWebSite(url: string, idx = 0): Promise<any[]> {
   const $ = await scrapeWebSite(url);
   const container = $(".sezione");
   const table = container.find("table").eq(idx);
-  // Array per memorizzare gli oggetti della tabella
   return htmlTableToJson($, table);
 }
 
-function htmlTableToJson($, table) {
-  const tableData = [];
+function htmlTableToJson($: cheerio.Root, table: cheerio.Cheerio): any[] {
+  const tableData: any[] = [];
 
-  // Ottieni le righe della tabella
   const rows = table.find("tr");
+  const keys: string[] = [];
 
-  // Ottieni i valori della prima riga come chiavi
-  const keys = [];
   rows
     .first()
     .find("td")
-    .each((index, element) => {
+    .each((_index, element) => {
       keys.push($(element).text().trim());
     });
 
-  // Crea gli oggetti corrispondenti
-  rows.slice(1).each((rowIndex, rowElement) => {
-    const rowData = {};
+  rows.slice(1).each((_rowIndex, rowElement) => {
+    const rowData: { [key: string]: string } = {};
     const columns = $(rowElement).find("td");
 
     columns.each((colIndex, colElement) => {
@@ -109,9 +110,4 @@ function htmlTableToJson($, table) {
   return tableData;
 }
 
-module.exports = {
-  scrapeHRefsTeamsFrommAICSWebSite,
-  scrapeHRefsFrommAICSWebSite,
-  scrapeTableFromAICSWebSite,
-  scrapeHRefsTournaments
-};
+export { scrapeHRefsTeamsFrommAICSWebSite, scrapeHRefsFrommAICSWebSite, scrapeTableFromAICSWebSite, scrapeHRefsTournaments };
