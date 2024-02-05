@@ -1,16 +1,15 @@
-import { MongoClient, ServerApiVersion } from "mongodb";
-
-const uri = "mongodb+srv://sdiricco:4utF98DFcYuHMYP8@cluster0.7ooa4te.mongodb.net/?retryWrites=true&w=majority";
+import { MongoClient, ServerApiVersion } from 'mongodb'
+import { MONGO_URI } from '../constants/index'
 
 function create(): MongoClient {
-  const client = new MongoClient(uri, {
+  const client = new MongoClient(MONGO_URI, {
     serverApi: {
       version: ServerApiVersion.v1,
       strict: true,
       deprecationErrors: true,
     },
-  });
-  return client;
+  })
+  return client
 }
 
-export { create };
+export { create }
