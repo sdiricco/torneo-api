@@ -1,5 +1,5 @@
-const express = require("express");
-const torneoController = require("../../controllers/torneoController");
+import express from "express";
+import * as torneoController from "../../controllers/torneoController";
 
 const router = express.Router();
 
@@ -10,4 +10,4 @@ router.get("/tournaments/:id", torneoController.getTournamentDetails);
 router.get("/tournaments/:id/players", torneoController.getPlayersStats);
 router.get("/tournaments/:id/calendar/:week", torneoController.getTournamentCalendar);
 
-module.exports = router;
+export default router;
