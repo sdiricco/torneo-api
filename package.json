@@ -36,8 +36,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon src/index.ts",
-    "build": "tsc",
-    "start": "rm -rf dist && tsc && node scripts/copy-files.js && node dist/index.js"
+    "build": "tsc && node scripts/copy-files.js",
+    "start": "node dist/index.js"
   },
   "repository": {
     "type": "git",
