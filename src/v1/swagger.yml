@@ -4,8 +4,8 @@ info:
   description: The official torneo **REST** api
   version: 1.0.0
 servers:
-  - url: https://workout-api-6ay8.onrender.com
-    description: Beta server
+  - url: https://aics-api-a74878fb1caf.herokuapp.com/
+    description: PROD server
 
 paths:
  /api/v1/standings:
