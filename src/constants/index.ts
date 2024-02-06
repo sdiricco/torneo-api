@@ -1,20 +1,6 @@
 const AICS_BASE_URL: string | undefined = process.env.AICS_BASE_URL
 const MONGO_URI: string = process.env.MONGO_URI || ''
-
-const AICS_FUTSAL_TOURNAMENTS: {
-  name: string
-  circolo: string
-  location: string
-  id: string
-}[] = [
-  {
-    name: 'Amatori/Dilettanti Girone A',
-    circolo: 'Amatori/Dilettanti C.T.L. ',
-    location: 'VERSILIA',
-    id: '69',
-  },
-  // ... altri elementi
-]
+const PORT: number = (process.env.PORT && Number(process.env.PORT)) || 3000
 
 const AICS_TEAMS_RANKING_KEY_MAPPING: Record<string, string> = {
   Nome: 'name',
@@ -89,9 +75,9 @@ const AICS_SPECIAL_MEASURES_KEY_MAPPING: Record<string, string> = {
 }
 
 export {
+  PORT,
   MONGO_URI,
   AICS_BASE_URL,
-  AICS_FUTSAL_TOURNAMENTS,
   AICS_TEAMS_RANKING_KEY_MAPPING,
   AICS_PLAYERS_RANKING_KEY_MAPPING,
   AICS_LAST_RESULTS_KEY_MAPPING,

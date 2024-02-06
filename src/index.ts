@@ -5,11 +5,11 @@ import bodyParser from 'body-parser'
 import cors from 'cors'
 import v1TorneoRouter from './v1/routes/torneoRoutes'
 import { swagger } from './v1/swagger'
+import { PORT } from './constants'
 
 dotenv.config()
 
 const app = express()
-const PORT = (process.env.PORT && Number(process.env.PORT)) || 3000
 
 app.use(cors())
 app.use(bodyParser.json())
