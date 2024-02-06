@@ -16,9 +16,9 @@ import {
   scrapeHRefsTournaments,
 } from '../helpers/scraper'
 import { DateTime } from 'luxon'
-import * as db from '../database/mongo'
 import { decodeTable } from '../helpers/decoder'
 import { formatNextMatchesResults, formatMatchResults } from '../helpers/dto'
+import { getTournamentsFromDB, updateTournamentsToDB } from '../database/api'
 
 const baseUrl: string | undefined = AICS_BASE_URL
 
@@ -319,34 +319,6 @@ async function scrapeTournaments(): Promise<any[]> {
     }
   })
   return dataDecoded
-}
-
-async function updateTournamentsToDB(dataDecoded: any[] = []): Promise<any> {
-  const client: any = db.create()
-  await client.connect()
-  console.log('DB connected')
-  const databaseName: any = client.db('aics')
-  const tournamentsCollection: any = databaseName.collection('tournaments')
-  const data: any = {
-    lastUpdate: new Date(),
-    values: dataDecoded,
-  }
-  const result: any = await tournamentsCollection.updateOne({}, { $set: data })
-  await client.close()
-  console.log('Close DB connection')
-  return result
-}
-
-async function getTournamentsFromDB(): Promise<any> {
-  const client: any = db.create()
-  await client.connect()
-  console.log('DB connected')
-  const databaseName: any = client.db('aics')
-  const tournamentsCollection: any = databaseName.collection('tournaments')
-  const result: any[] = await tournamentsCollection.find().toArray()
-  await client.close()
-  console.log('Close DB connection')
-  return result[0]
 }
 
 export {
