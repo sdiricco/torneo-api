@@ -1,7 +1,7 @@
 import { MongoClient, ServerApiVersion } from 'mongodb'
-import { MONGO_URI } from '../constants/index'
+import { MONGO_URI } from '../constants'
 
-function create(): MongoClient {
+function create(): MongoClient | undefined {
   const client = new MongoClient(MONGO_URI, {
     serverApi: {
       version: ServerApiVersion.v1,

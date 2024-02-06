@@ -98,18 +98,23 @@ const getTeamsRanking = async (id: string): Promise<any[]> => {
       rawTable,
       AICS_TEAMS_RANKING_KEY_MAPPING,
     )
-    const formattedTable: any[] = decodedTable.map((t) => {
-      return {
-        ...t,
-        points: t.points && Number(t.points),
-        matches: t.matches && Number(t.matches),
-        won_matches: t.won_matches && Number(t.won_matches),
-        drawn_matches: t.drawn_matches && Number(t.drawn_matches),
-        lost_matches: t.lost_matches && Number(t.lost_matches),
-        goals_scored: t.goals_scored && Number(t.goals_scored),
-        goals_conceded: t.goals_conceded && Number(t.goals_conceded),
-      }
-    })
+    const formattedTable: any[] = decodedTable
+      //toglie gli oggetti che hanno tutti i valori pari a "" o null o undefined (toglie la riga dalla tabella)
+      .filter((t) => {
+        return Object.values(t).some((v) => v)
+      })
+      .map((t) => {
+        return {
+          ...t,
+          points: t.points && Number(t.points),
+          matches: t.matches && Number(t.matches),
+          won_matches: t.won_matches && Number(t.won_matches),
+          drawn_matches: t.drawn_matches && Number(t.drawn_matches),
+          lost_matches: t.lost_matches && Number(t.lost_matches),
+          goals_scored: t.goals_scored && Number(t.goals_scored),
+          goals_conceded: t.goals_conceded && Number(t.goals_conceded),
+        }
+      })
     return formattedTable
   } catch (error) {
     throw error
@@ -319,6 +324,7 @@ async function scrapeTournaments(): Promise<any[]> {
 async function updateTournamentsToDB(dataDecoded: any[] = []): Promise<any> {
   const client: any = db.create()
   await client.connect()
+  console.log('DB connected')
   const databaseName: any = client.db('aics')
   const tournamentsCollection: any = databaseName.collection('tournaments')
   const data: any = {
@@ -327,16 +333,19 @@ async function updateTournamentsToDB(dataDecoded: any[] = []): Promise<any> {
   }
   const result: any = await tournamentsCollection.updateOne({}, { $set: data })
   await client.close()
+  console.log('Close DB connection')
   return result
 }
 
 async function getTournamentsFromDB(): Promise<any> {
   const client: any = db.create()
   await client.connect()
+  console.log('DB connected')
   const databaseName: any = client.db('aics')
   const tournamentsCollection: any = databaseName.collection('tournaments')
   const result: any[] = await tournamentsCollection.find().toArray()
   await client.close()
+  console.log('Close DB connection')
   return result[0]
 }
 

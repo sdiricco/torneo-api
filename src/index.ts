@@ -1,13 +1,13 @@
 // In src/index.ts
 import * as dotenv from 'dotenv'
+dotenv.config()
+
 import express from 'express'
 import bodyParser from 'body-parser'
 import cors from 'cors'
 import v1TorneoRouter from './v1/routes/torneoRoutes'
 import { swagger } from './v1/swagger'
 import { PORT } from './constants'
-
-dotenv.config()
 
 const app = express()
 
